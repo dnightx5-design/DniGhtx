@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="icon.png"><meta name="robots" content="noindex,nofollow"><title>DniGhtX Admin</title>
+<style>
+:root{--bg:#02040a;--card:#0a111f;--line:#16294a;--cy:#3ec6ff;--bl:#4f7dff;--tx:#e8f1fb;--mu:#8fa6c4;--ok:#34d399;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#0b2a5a55,transparent 55%),var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit;color:var(--tx);background:#0d1626;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+button{cursor:pointer}.pri{background:linear-gradient(90deg,var(--cy),var(--bl));color:#02040a;border:0;font-weight:700}.ghost:hover{border-color:var(--cy)}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+header{display:flex;align-items:center;gap:12px;padding:14px 4vw;border-bottom:1px solid var(--line);background:#02040acc;backdrop-filter:blur(10px);position:sticky;top:0;z-index:5}
+header img{width:36px;height:36px;border-radius:8px}header b{font-size:18px;flex:1}header b span{color:var(--cy)}
+.dl{text-decoration:none;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:9px 12px}.dl:hover{border-color:var(--cy)}
+main{padding:22px 4vw;max-width:1280px;margin:auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.st{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}.st b{display:block;font-size:26px}.st span{color:var(--mu);font-size:13px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}.bar input{flex:1;min-width:200px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border-radius:20px;padding:6px 14px;font-size:14px}.chip.on{background:var(--cy);color:#02040a;border-color:var(--cy);font-weight:700}
+.tw{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mu);font-weight:500;font-size:13px;padding:12px 14px;border-bottom:1px solid var(--line)}td{padding:12px 14px;border-bottom:1px solid #101c33}
+tr.r{cursor:pointer}tr.r:hover td{background:#0e1a30}tr:last-child td{border:0}
+.bd{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;border:1px solid}
+.New{color:var(--cy)}.In\ Progress{color:var(--warn)}.Completed{color:var(--ok)}.Cancelled{color:var(--bad)}.Unpaid{color:var(--bad)}.Advance\ paid{color:var(--warn)}.Fully\ paid{color:var(--ok)}
+.empty{padding:40px;text-align:center;color:var(--mu)}
+#mod{position:fixed;inset:0;background:#000b;display:none;z-index:20;justify-content:flex-end}#mod.on{display:flex}
+.pn{width:min(560px,100%);height:100%;background:#070d18;border-left:1px solid var(--cy);overflow:auto;padding:20px}
+.ph{display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:14px}.ph h2{margin:0;font-size:20px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin-bottom:16px}.kv span{color:var(--mu)}.kv a{color:var(--cy)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.ctl label{display:flex;flex-direction:column;gap:4px;color:var(--mu);font-size:13px;flex:1;min-width:150px}
+h3{margin:18px 0 8px;font-size:15px;color:var(--cy)}.qa{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}.qa small{color:var(--mu);display:block}
+textarea{width:100%;min-height:90px;resize:vertical}
+#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,30px);background:var(--ok);color:#02040a;font-weight:700;padding:8px 18px;border-radius:20px;opacity:0;transition:.25s;z-index:40}#toast.on{opacity:1;transform:translate(-50%,0)}
+#login{max-width:360px;margin:12vh auto;padding:28px;background:var(--card);border:1px solid var(--line);border-radius:16px;text-align:center}#login input{width:100%;margin:14px 0}#login img{width:64px;border-radius:14px}#err{color:var(--bad);min-height:22px;margin:8px 0 0}
+@media(max-width:760px){thead{display:none}table,tbody,tr,td{display:block}tr.r{padding:12px 14px;border-bottom:1px solid #101c33}td{border:0;padding:2px 0}td[data-l]::before{content:attr(data-l)": ";color:var(--mu)}.kv{grid-template-columns:90px 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div id="login"><img src="icon.png" alt=""><h2>DniGhtX Admin</h2><input id="pw" type="password" placeholder="Admin password" autocomplete="current-password"><button id="go" class="pri" style="width:100%">Log in</button><p id="err"></p></div>
+<div id="app" hidden>
+<header><img src="icon.png" alt=""><b>DniGhtX <span>Admin</span></b><a class="dl" href="/api/admin/export.csv">Export CSV</a><button id="out" class="ghost">Log out</button></header>
+<main><div class="stats" id="stats"></div>
+<div class="bar"><input id="q" type="search" placeholder="Search name, contact, order number or service"><select id="pf"><option value="">All payments</option><option>Unpaid</option><option>Advance paid</option><option>Fully paid</option></select></div>
+<div class="bar"><div class="chips" id="chips"></div></div>
+<div class="tw"><table><thead><tr><th>Order</th><th>Customer</th><th>Service</th><th>Price</th><th>Status</th><th>Payment</th><th>Date</th></tr></thead><tbody id="tb"></tbody></table><div class="empty" id="em" hidden>No orders match.</div></div></main></div>
+<div id="mod"><div class="pn" id="pn"></div></div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),ST=['New','In Progress','Completed','Cancelled'],PY=['Unpaid','Advance paid','Fully paid'];
+let orders=[],fs='';
+const api=(u,m,b)=>fetch(u,{method:m||'GET',headers:{'content-type':'application/json'},body:b&&JSON.stringify(b)});
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)};
+const fmt=d=>{const x=new Date(String(d).replace(' ','T')+'Z');return isNaN(x)?d:x.toLocaleString([],{dateStyle:'medium',timeStyle:'short'})};
+const npr=n=>'NPR '+Number(n).toLocaleString();
+const badge=v=>el('span','bd '+v,v);
+async function load(){const r=await api('/api/admin/orders');if(r.status===401){$('#login').hidden=false;$('#app').hidden=true;return}$('#login').hidden=true;$('#app').hidden=false;orders=await r.json();stats();draw()}
+function stats(){const c=s=>orders.filter(o=>o.status===s).length;const rev=orders.filter(o=>o.status==='Completed').reduce((a,o)=>a+o.price,0);const due=orders.filter(o=>['New','In Progress'].includes(o.status)&&(o.payment||'Unpaid')==='Unpaid').length;
+const d=[['Total orders',orders.length],['New',c('New')],['In progress',c('In Progress')],['Completed',c('Completed')],['Awaiting advance',due],['Completed value',npr(rev)]];
+$('#stats').replaceChildren(...d.map(([l,n])=>{const x=el('div','st');x.append(el('b',0,n),el('span',0,l));return x}))}
+function chips(){$('#chips').replaceChildren(...['',...ST].map(s=>{const b=el('button','chip ghost'+(fs===s?' on':''),(s||'All')+' ('+(s?orders.filter(o=>o.status===s).length:orders.length)+')');b.onclick=()=>{fs=s;draw()};return b}))}
+function draw(){chips();const q=$('#q').value.trim().toLowerCase(),p=$('#pf').value;
+const v=orders.filter(o=>(!fs||o.status===fs)&&(!p||(o.payment||'Unpaid')===p)&&(!q||(o.name+' '+o.contact+' #'+o.id+' '+o.service).toLowerCase().includes(q)));
+$('#em').hidden=v.length>0;
+$('#tb').replaceChildren(...v.map(o=>{const r=el('tr','r');r.tabIndex=0;const cell=(l,n)=>{const t=el('td');t.dataset.l=l;t.append(n);r.append(t)};
+cell('',el('b',0,'#'+o.id));cell('Customer',document.createTextNode(o.name));cell('Service',document.createTextNode(o.service));cell('Price',document.createTextNode(npr(o.price)));cell('',badge(o.status));cell('',badge(o.payment||'Unpaid'));cell('',document.createTextNode(fmt(o.created_at)));
+r.onclick=()=>open(o.id);r.onkeydown=e=>{if(e.key==='Enter')open(o.id)};return r}))}
+function sel(list,val,fn){const s=document.createElement('select');list.forEach(x=>{const o=new Option(x,x);o.selected=x===val;s.add(o)});s.onchange=()=>fn(s.value);return s}
+async function save(o,body,msg){const r=await api('/api/admin/orders/'+o.id,'PATCH',body);if(r.ok){Object.assign(o,body);stats();draw();toast(msg)}else toast('Save failed')}
+function open(id){const o=orders.find(x=>x.id===id),P=$('#pn');if(!o)return;
+const h=el('div','ph');const t=el('div');t.append(el('h2',0,'Order #'+o.id+' · '+o.service));h.append(t);const x=el('button','ghost','Close');x.onclick=close;h.append(x);
+const kv=el('div','kv');const add=(k,n)=>{kv.append(el('span',0,k));const d=el('div');d.append(n);kv.append(d)};
+add('Customer',document.createTextNode(o.name));
+const c=/@/.test(o.contact)?'mailto:'+o.contact:/^[\d+\s-]{7,}$/.test(o.contact)?'tel:'+o.contact.replace(/[^\d+]/g,''):'';
+if(c){const a=el('a',0,o.contact);a.href=c;add('Contact',a)}else add('Contact',document.createTextNode(o.contact));
+add('Price',document.createTextNode(npr(o.price)));add('50% advance',document.createTextNode(npr(Math.ceil(o.price/2))));add('Submitted',document.createTextNode(fmt(o.created_at)));
+const ctl=el('div','ctl');const l1=el('label',0,'Status');l1.append(sel(ST,o.status,v=>save(o,{status:v},'Status updated')));const l2=el('label',0,'Payment');l2.append(sel(PY,o.payment||'Unpaid',v=>save(o,{payment:v},'Payment updated')));ctl.append(l1,l2);
+P.replaceChildren(h,kv,ctl,el('h3',0,'Customer requirements'));
+(o.answers||[]).forEach(a=>{const d=el('div','qa');d.append(el('small',0,a.q),document.createTextNode(a.a));P.append(d)});
+P.append(el('h3',0,'Private notes'));const n=el('textarea');n.value=o.notes||'';n.placeholder='Only you can see these notes';const sv=el('button','pri','Save notes');sv.style.marginTop='8px';sv.onclick=()=>save(o,{notes:n.value},'Notes saved');
+const cp=el('button','ghost','Copy summary');cp.style.cssText='margin:8px 0 0 8px';cp.onclick=()=>navigator.clipboard.writeText(o.summary).then(()=>toast('Copied'));P.append(n,sv,cp);
+$('#mod').classList.add('on')}
+function close(){$('#mod').classList.remove('on')}
+$('#mod').onclick=e=>{if(e.target.id==='mod')close()};addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+$('#q').oninput=draw;$('#pf').onchange=draw;
+const login=async()=>{const r=await api('/api/admin/login','POST',{password:$('#pw').value});if(r.ok){$('#pw').value='';load()}else $('#err').textContent='Wrong password or too many attempts. Try again later.'};
+$('#go').onclick=login;$('#pw').onkeydown=e=>{if(e.key==='Enter')login()};
+$('#out').onclick=async()=>{await api('/api/admin/logout','POST');close();load()};
+load();setInterval(()=>{if(!$('#app').hidden)load()},30000);
+</script></body></html>

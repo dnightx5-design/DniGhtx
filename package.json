@@ -1,0 +1,1 @@
+{"name":"dnightx","version":"1.0.0","scripts":{"start":"node server.js"},"engines":{"node":">=20.12"},"dependencies":{"@libsql/client":"^0.14.0","express":"^4.19.2"}}
